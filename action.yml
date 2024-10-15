@@ -26,5 +26,5 @@ runs:
     INPUT_RESULTS: "${{ inputs.task-results }}"
     INPUT_STUDENT_NAME: "${{ inputs.student-name }}"
     INPUT_ROBOT_EMAIL: "${{ inputs.robot-email }}"
-    INPUT_PRIVATE_API_KEY: "${{ inputs.private_api_key }}"
+    INPUT_PRIVATE_API_KEY: "${{ inputs.private-api-key }}"
     INPUT_TABLE_ID: "${{ inputs.table-id }}"

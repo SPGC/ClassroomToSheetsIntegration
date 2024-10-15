@@ -33,7 +33,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         &client,
         &access_token,
         &table_id,
-        sheet_name,
+        &sheet_name,
     );
 
     student_manager

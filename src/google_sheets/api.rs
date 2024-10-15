@@ -7,13 +7,13 @@ pub async fn read_from_sheet(
     spreadsheet_id: &str,
     range: &str,
 ) -> Result<Value, Box<dyn std::error::Error>> {
-    // Формирование URL
+    // URL froming
     let url = format!(
         "https://sheets.googleapis.com/v4/spreadsheets/{}/values/{}",
         spreadsheet_id, range
     );
 
-    // Отправка запроса
+    // Sending request
     let resp = client
         .get(&url)
         .bearer_auth(access_token)
@@ -37,20 +37,20 @@ pub async fn write_to_sheet(
     range: &str,
     values: &Vec<Vec<String>>,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    // Формирование URL
+    // URL froming
     let url = format!(
         "https://sheets.googleapis.com/v4/spreadsheets/{}/values/{}?valueInputOption=RAW",
         spreadsheet_id, range
     );
 
-    // Тело запроса
+    // Request body
     let body = serde_json::json!({
         "range": range,
         "majorDimension": "ROWS",
         "values": values
     });
 
-    // Отправка запроса
+    // Sending request
     let resp = client
         .put(&url)
         .bearer_auth(access_token)
@@ -75,22 +75,22 @@ pub async fn write_to_cell(
     spreadsheet_id: &str,
     row: usize,
     col: usize,
-    value: Value, // Изменено с &str на Value
+    value: Value, 
 ) -> Result<(), Box<dyn std::error::Error>> {
-    // Преобразование координат в адрес ячейки
+    // Transforming coordinates to cell address
     let cell_address = crate::data_processing::utils::coords_to_cell_address(row, col);
     let range = cell_address.clone();
 
-    // Проверяем и расширяем таблицу, если необходимо
-    let sheet_id = 0; // Предположим, что работаем с первым листом
+    // Check and resize the table if necessary
+    let sheet_id = 0; // Assuming that working with the first sheet
     let required_column_count = col + 1;
     let required_row_count = row + 1;
 
-    // Получаем текущие размеры таблицы
+    // Get current table size
     let (current_row_count, current_column_count) =
-        crate::google_sheets::api::get_sheet_dimensions(client, access_token, spreadsheet_id, sheet_id).await?;
+        get_sheet_dimensions(client, access_token, spreadsheet_id, sheet_id).await?;
 
-    // Расширяем количество столбцов, если необходимо
+    // Enlarge the number of columns if necessary
     if required_column_count > current_column_count {
         crate::google_sheets::api::expand_sheet_columns(
             client,
@@ -101,10 +101,10 @@ pub async fn write_to_cell(
         )
             .await?;
     }
-
-    // Расширяем количество строк, если необходимо
+    
+    // Enlarge the number of rows if necessary
     if required_row_count > current_row_count {
-        crate::google_sheets::api::expand_sheet_rows(
+        expand_sheet_rows(
             client,
             access_token,
             spreadsheet_id,
@@ -114,20 +114,20 @@ pub async fn write_to_cell(
             .await?;
     }
 
-    // Формирование URL
+    // URL
     let url = format!(
         "https://sheets.googleapis.com/v4/spreadsheets/{}/values/{}?valueInputOption=USER_ENTERED",
         spreadsheet_id, range
     );
 
-    // Тело запроса
+    // Request body
     let body = serde_json::json!({
         "range": range,
         "majorDimension": "ROWS",
         "values": [[value]]
     });
-
-    // Отправка запроса
+    
+    // Sending request
     let resp = client
         .put(&url)
         .bearer_auth(access_token)
@@ -152,13 +152,13 @@ pub async fn expand_sheet_columns(
     sheet_id: u32,
     new_column_count: u32,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    // Формирование URL
+    // URL
     let url = format!(
         "https://sheets.googleapis.com/v4/spreadsheets/{}:batchUpdate",
         spreadsheet_id
     );
 
-    // Тело запроса
+    // Request body
     let body = serde_json::json!({
         "requests": [
             {
@@ -175,7 +175,7 @@ pub async fn expand_sheet_columns(
         ]
     });
 
-    // Отправка запроса
+    // Sending request
     let resp = client
         .post(&url)
         .bearer_auth(access_token)
@@ -199,13 +199,13 @@ pub async fn get_sheet_id_by_name(
     spreadsheet_id: &str,
     sheet_name: &str,
 ) -> Result<u32, Box<dyn std::error::Error>> {
-    // Формирование URL
+    // URL
     let url = format!(
         "https://sheets.googleapis.com/v4/spreadsheets/{}",
         spreadsheet_id
     );
 
-    // Отправка запроса
+    // Sending request
     let resp = client
         .get(&url)
         .bearer_auth(access_token)
@@ -240,13 +240,13 @@ pub async fn get_sheet_dimensions(
     spreadsheet_id: &str,
     sheet_id: u32,
 ) -> Result<(usize, usize), Box<dyn std::error::Error>> {
-    // Формирование URL
+    // URL
     let url = format!(
         "https://sheets.googleapis.com/v4/spreadsheets/{}?fields=sheets.properties",
         spreadsheet_id
     );
 
-    // Отправка запроса
+    // Sending request
     let resp = client
         .get(&url)
         .bearer_auth(access_token)
@@ -290,13 +290,13 @@ pub async fn expand_sheet_rows(
     sheet_id: u32,
     new_row_count: u32,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    // Формирование URL
+    // URL
     let url = format!(
         "https://sheets.googleapis.com/v4/spreadsheets/{}:batchUpdate",
         spreadsheet_id
     );
 
-    // Тело запроса
+    // Request body
     let body = serde_json::json!({
         "requests": [
             {
@@ -313,7 +313,7 @@ pub async fn expand_sheet_rows(
         ]
     });
 
-    // Отправка запроса
+    // Sending request
     let resp = client
         .post(&url)
         .bearer_auth(access_token)

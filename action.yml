@@ -21,7 +21,7 @@ inputs:
 
 runs:
   using: docker
-  image: Dockerfile
+  image: spgc/github_classroom_spreadsheets_integration:latest
   env:
     INPUT_RESULTS: "${{ inputs.task-results }}"
     INPUT_STUDENT_NAME: "${{ inputs.student-name }}"

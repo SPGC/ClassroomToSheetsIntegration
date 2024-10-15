@@ -5,11 +5,11 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(Debug, Serialize)]
 struct Claims {
-    iss: String,       // Email сервисного аккаунта
-    scope: String,     // Область доступа
-    aud: String,       // Аудитория
-    exp: usize,        // Время истечения токена
-    iat: usize,        // Время выпуска токена
+    iss: String,       // Email of service account
+    scope: String,     // Access scope
+    aud: String,       // Audience
+    exp: usize,        // Token expiration time
+    iat: usize,        // Token issue time
 }
 
 #[derive(Debug, Deserialize)]
@@ -24,11 +24,11 @@ pub async fn get_access_token(
     private_key: &str,
     scope: &str,
 ) -> Result<String, Box<dyn std::error::Error>> {
-    // Создание JWT
+    // JWT
     let iat = SystemTime::now()
         .duration_since(UNIX_EPOCH)?
         .as_secs() as usize;
-    let exp = iat + 3600; // Токен действителен 1 час
+    let exp = iat + 3600; // Token is valid for 1 hour
 
     let claims = Claims {
         iss: service_account_email.to_string(),
@@ -42,7 +42,7 @@ pub async fn get_access_token(
 
     let jwt = encode(&Header::new(Algorithm::RS256), &claims, &encoding_key)?;
 
-    // Запрос на получение токена доступа
+    // Request to get access token
     let client = Client::new();
     let params = [
         ("grant_type", "urn:ietf:params:oauth:grant-type:jwt-bearer"),

@@ -22,11 +22,11 @@ pub struct TestResults {
 }
 
 pub fn parse_results(base64_encoded: &str) -> Result<TestResults, Box<dyn Error>> {
-    // Декодирование Base64
+    // Base64 decoding
     let decoded_bytes = decode(base64_encoded)?;
     let decoded_str = String::from_utf8(decoded_bytes)?;
 
-    // Парсинг JSON
+    // JSON parsing
     let test_results: TestResults = serde_json::from_str(&decoded_str)?;
     Ok(test_results)
 }

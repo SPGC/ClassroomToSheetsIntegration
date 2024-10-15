@@ -55,13 +55,13 @@ pub fn find_first_empty_column(table: &Vec<Vec<String>>) -> usize {
 
 pub fn coords_to_cell_address(row: usize, col: usize) -> String {
     let column_letters = number_to_column_letters(col);
-    let row_number = row + 1; // Таблица использует 1-индексацию для строк
+    let row_number = row + 1; // Google sheets use 1-indexing for rows
     format!("{}{}", column_letters, row_number)
 }
 
 fn number_to_column_letters(mut col_num: usize) -> String {
     let mut letters = String::new();
-    col_num += 1; // Таблица использует 1-индексацию для столбцов
+    col_num += 1; // Google sheets use 1-indexing for columns
 
     while col_num > 0 {
         let rem = (col_num - 1) % 26;

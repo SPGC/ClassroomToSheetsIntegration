@@ -1,5 +1,5 @@
 use crate::data_processing::utils::{
-    find_first_empty_row, find_first_empty_column, find_column_by_header, coords_to_cell_address,
+    find_first_empty_row, find_first_empty_column, find_column_by_header,
 };
 use crate::google_sheets::api::{read_from_sheet, write_to_cell};
 use reqwest::Client;
@@ -30,8 +30,8 @@ impl<'a> StudentManager<'a> {
         &self,
         github_id: &str,
     ) -> Result<usize, Box<dyn std::error::Error>> {
-        // Читаем данные из таблицы
-        let read_range = format!("{}!A1:Z1000", self.sheet_name);
+        // Read the data from the table
+        let read_range = format!("{}!A1:ZZ1000", self.sheet_name);
         let data = read_from_sheet(
             self.client,
             self.access_token,
@@ -40,14 +40,14 @@ impl<'a> StudentManager<'a> {
         )
             .await?;
 
-        // Преобразуем данные в структуру таблицы
+        // Parse the data into a table structure
         let table = crate::data_processing::parser::parse_sheet_data(&data)?;
 
-        // Находим индекс столбца для 'github_id'
+        // Find the column index for 'github_id'
         let github_id_col = find_column_by_header(&table, "github_id")
             .ok_or("Столбец 'github_id' не найден")?;
 
-        // Ищем строку с заданным GitHub ID
+        // Search for the student by GitHub ID
         for (row_idx, row) in table.iter().enumerate().skip(1) { // Пропускаем заголовок
             if let Some(cell_value) = row.get(github_id_col) {
                 if cell_value == github_id {
@@ -57,10 +57,10 @@ impl<'a> StudentManager<'a> {
             }
         }
 
-        // Студент не найден, создаем новую запись
+        // Student not found, create a new record
         let new_row_idx = find_first_empty_row(&table);
 
-        // Записываем GitHub ID в столбец 'github_id' в новой строке
+        // Write the GitHub ID to the 'github_id' column in the new row
         write_to_cell(
             self.client,
             self.access_token,
@@ -80,10 +80,10 @@ impl<'a> StudentManager<'a> {
         assignment_name: &str,
         result: i32,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        // Находим или создаем строку студента
+        // Find or create a student row
         let student_row = self.get_or_create_student_row(github_id).await?;
 
-        // Читаем данные из таблицы (только первую строку - заголовки)
+        // Read the data from the table (only the first row - headers)
         let header_range = format!("{}!A1:Z1", self.sheet_name);
         let data = read_from_sheet(
             self.client,
@@ -93,13 +93,13 @@ impl<'a> StudentManager<'a> {
         )
             .await?;
 
-        // Преобразуем данные в структуру таблицы
+        // Parse the data into a table structure
         let table = crate::data_processing::parser::parse_sheet_data(&data)?;
 
         let header_row = if !table.is_empty() {
             table[0].clone()
         } else {
-            // Если таблица пуста, создаем заголовок с 'github_id'
+            // If the table is empty, create a header with 'github_id'
             write_to_cell(
                 self.client,
                 self.access_token,
@@ -112,15 +112,15 @@ impl<'a> StudentManager<'a> {
             vec!["github_id".to_string()]
         };
 
-        // Ищем индекс столбца задания
+        // Find the assignment column index
         let assignment_col = find_column_by_header(&table, assignment_name);
 
         let assignment_col = match assignment_col {
             Some(col_idx) => col_idx,
             None => {
-                // Столбец не найден, создаем новый столбец в первом пустом столбце
+                // Column not found, create a new column in the first empty column
                 let new_col_idx = find_first_empty_column(&table);
-                // Записываем название задания в заголовок
+                // Write the assignment name to the header
                 write_to_cell(
                     self.client,
                     self.access_token,
@@ -134,7 +134,7 @@ impl<'a> StudentManager<'a> {
             }
         };
 
-        // Записываем результат в ячейку на пересечении строки студента и столбца задания
+        // Write the result to the cell at the intersection of the student row and the assignment column
         write_to_cell(
             self.client,
             self.access_token,

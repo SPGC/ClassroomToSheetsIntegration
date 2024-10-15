@@ -68,7 +68,7 @@ impl<'a> StudentManager<'a> {
             self.spreadsheet_id,
             new_row_idx,
             github_id_col,
-            github_id,
+            serde_json::json!(github_id),
         )
             .await?;
 
@@ -107,7 +107,7 @@ impl<'a> StudentManager<'a> {
                 self.spreadsheet_id,
                 0,
                 0,
-                "github_id",
+                serde_json::json!("github_id"),
             )
                 .await?;
             vec!["github_id".to_string()]
@@ -128,7 +128,7 @@ impl<'a> StudentManager<'a> {
                     self.spreadsheet_id,
                     0,
                     new_col_idx,
-                    assignment_name,
+                    serde_json::json!(assignment_name),
                 )
                     .await?;
                 new_col_idx
@@ -142,7 +142,7 @@ impl<'a> StudentManager<'a> {
             self.spreadsheet_id,
             student_row,
             assignment_col,
-            &result.to_string(),
+            serde_json::json!(result),
         )
             .await?;
 

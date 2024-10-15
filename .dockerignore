@@ -1,0 +1,7 @@
+.gitignore
+action.yml
+credentials.json
+Dockerfile
+target
+.idea
+LICENSE

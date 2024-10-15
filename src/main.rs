@@ -7,55 +7,42 @@ use students::student_manager::StudentManager;
 use reqwest::Client;
 use serde_json::Value;
 use tokio;
+use std::env;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Загрузка ключа сервисного аккаунта из файла credentials.json
-    let creds = std::fs::read_to_string("credentials.json")?;
-    let creds_json: Value = serde_json::from_str(&creds)?;
+    let task_name = env::var("INPUT_TASK_NAME")?;
+    let student_github_id = env::var("INPUT_STUDENT_NAME")?;
+    let robot_email = env::var("INPUT_ROBOT_EMAIL")?;
+    let private_api_key_raw = env::var("INPUT_PRIVATE_API_KEY")?;
+    let task_result_str = env::var("INPUT_TASK_RESULTS")?;
+    let table_id = env::var("INPUT_TABLE_ID")?;
 
-    let private_key = creds_json["private_key"].as_str().unwrap();
-    let client_email = creds_json["client_email"].as_str().unwrap();
+    let private_api_key = private_api_key_raw.replace("\\n", "\n");
 
-    // Получение токена доступа
+    let task_result: i32 = task_result_str.parse()?;
+
     let scope = "https://www.googleapis.com/auth/spreadsheets";
-    let access_token = get_access_token(client_email, private_key, scope).await?;
+    let access_token = get_access_token(&robot_email, &private_api_key, scope).await?;
 
-    // Идентификатор таблицы и имя листа
-    let spreadsheet_id = "129sP7Oi90QoE1dqhdA3KFPB1K54BJM5ot3WVPXOA43M";
-    let sheet_name = "Sheet1"; // Имя листа
+    let sheet_name = env::var("INPUT_SHEET_NAME").unwrap_or("Sheet1".to_string());
 
-    // Создание клиента
     let client = Client::new();
 
-    // Создаем экземпляр StudentManager
     let student_manager = StudentManager::new(
         &client,
         &access_token,
-        spreadsheet_id,
+        &table_id,
         sheet_name,
     );
 
-    // Пример использования функции update_assignment_result
-    let github_id = "SPGC";
-    let assignment_name = "task01";
-    let result = 1;
-
     student_manager
-        .update_assignment_result(github_id, assignment_name, result)
-        .await?;
-
-    let github_id = "spgc3";
-    let assignment_name = "task02";
-    let result = 4;
-
-    student_manager
-        .update_assignment_result(github_id, assignment_name, result)
+        .update_assignment_result(&student_github_id, &task_name, task_result)
         .await?;
 
     println!(
         "Результат задания '{}' для студента '{}' обновлен.",
-        assignment_name, github_id
+        task_name, student_github_id
     );
 
     Ok(())

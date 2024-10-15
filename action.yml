@@ -1,0 +1,34 @@
+name: Classroom to sheets integration
+description: Send autotests results to Google Sheets
+author: Ilia Nechaev
+
+inputs:
+  task-name:
+    description: Name of the task
+    required: true
+  student-name:
+    description: Name of the student
+    required: true
+  robot-email:
+    description: Email of the robot
+    required: true
+  private_api_key:
+    description: API key for the private API
+    required: false
+  task-results:
+    description: Results of the task
+    required: true
+  table-id:
+    description: ID of the table
+    required: true
+
+runs:
+  using: docker
+  image: Dockerfile
+  env:
+    INPUT_TASK_NAME: ${{ inputs.task-name }}
+    INPUT_STUDENT_NAME: ${{ inputs.student-name }}
+    INPUT_ROBOT_EMAIL: ${{ inputs.robot-email }}
+    INPUT_PRIVATE_API_KEY: ${{ inputs.private_api_key }}
+    INPUT_TASK_RESULTS: ${{ inputs.task-results }}
+    INPUT_TABLE_ID: ${{ inputs.table-id }}

@@ -3,7 +3,6 @@ use crate::data_processing::utils::{
 };
 use crate::google_sheets::api::{read_from_sheet, write_to_cell};
 use reqwest::Client;
-use serde_json::Value;
 
 pub struct StudentManager<'a> {
     pub client: &'a Client,

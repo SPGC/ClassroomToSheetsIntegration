@@ -25,7 +25,7 @@ pub async fn read_from_sheet(
         Ok(data)
     } else {
         let error_text = resp.text().await?;
-        println!("Ошибка при получении данных: {}", error_text);
+        println!("Error while loading data: {}", error_text);
         Err(Box::from(error_text))
     }
 }
@@ -59,12 +59,11 @@ pub async fn write_to_sheet(
         .await?;
 
     if resp.status().is_success() {
-        let data: Value = resp.json().await?;
-        println!("Данные успешно записаны: {:#?}", data);
+        let _: Value = resp.json().await?;
         Ok(())
     } else {
         let error_text = resp.text().await?;
-        println!("Ошибка при записи данных: {}", error_text);
+        println!("Writing error: {}", error_text);
         Err(Box::from(error_text))
     }
 }
@@ -137,12 +136,11 @@ pub async fn write_to_cell(
         .await?;
 
     if resp.status().is_success() {
-        let data: Value = resp.json().await?;
-        println!("Данные успешно записаны в ячейку {}: {:#?}", cell_address, data);
+        let _: Value = resp.json().await?;
         Ok(())
     } else {
         let error_text = resp.text().await?;
-        println!("Ошибка при записи данных в ячейку {}: {}", cell_address, error_text);
+        println!("Error while writing data {}: {}", cell_address, error_text);
         Err(Box::from(error_text))
     }
 }
@@ -186,12 +184,11 @@ pub async fn expand_sheet_columns(
         .await?;
 
     if resp.status().is_success() {
-        let data: Value = resp.json().await?;
-        println!("Таблица успешно расширена: {:#?}", data);
+        let _: Value = resp.json().await?;
         Ok(())
     } else {
         let error_text = resp.text().await?;
-        println!("Ошибка при расширении таблицы: {}", error_text);
+        println!("Error while expanding the table: {}", error_text);
         Err(Box::from(error_text))
     }
 }
@@ -229,10 +226,10 @@ pub async fn get_sheet_id_by_name(
                 }
             }
         }
-        Err("Не удалось найти лист с указанным именем".into())
+        Err("Can't find the sheet".into())
     } else {
         let error_text = resp.text().await?;
-        println!("Ошибка при получении информации о таблице: {}", error_text);
+        println!("Error while loading table info {}", error_text);
         Err(Box::from(error_text))
     }
 }
@@ -277,10 +274,10 @@ pub async fn get_sheet_dimensions(
                 }
             }
         }
-        Err("Не удалось получить размеры листа".into())
+        Err("Can't get size of the sheet".into())
     } else {
         let error_text = resp.text().await?;
-        println!("Ошибка при получении размеров листа: {}", error_text);
+        println!("Error while loading size of the sheet {}", error_text);
         Err(Box::from(error_text))
     }
 }
@@ -325,12 +322,11 @@ pub async fn expand_sheet_rows(
         .await?;
 
     if resp.status().is_success() {
-        let data: Value = resp.json().await?;
-        println!("Количество строк успешно обновлено: {:#?}", data);
+        let _: Value = resp.json().await?;
         Ok(())
     } else {
         let error_text = resp.text().await?;
-        println!("Ошибка при обновлении количества строк: {}", error_text);
+        println!("Error while enlarging amount of rows: {}", error_text);
         Err(Box::from(error_text))
     }
 }

@@ -12,7 +12,7 @@ inputs:
   robot-email:
     description: Email of the robot
     required: true
-  private_api_key:
+  private-api-key:
     description: API key for the private API
     required: false
   table-id:
